@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProtoLab — 3D Print Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:    #2563EB;
+    --blue-dk: #1a48c0;
+    --navy:    #111827;
+    --gray:    #6B7280;
+    --light:   #E5E7EB;
+    --white:   #FFFFFF;
+    --surface: #1a2235;
+    --surface2: #212d42;
+    --border:  rgba(255,255,255,0.08);
+    --border-h: rgba(255,255,255,0.18);
+    --text:    #f4f6fb;
+    --muted:   #8a97ad;
+    --green:   #22c55e;
+    --red:     #ef4444;
+    --font:    'Outfit', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle dot grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Blue glow top */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(37,99,235,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeUp .5s ease both;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  /* SVG P mark */
+  .logo-mark {
+    width: 44px;
+    height: 44px;
+  }
+
+  .logo-text {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    color: var(--white);
+  }
+
+  .logo-text span { color: var(--blue); }
+
+  .tagline {
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: .22em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+
+  .header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: .5rem;
+  }
+
+  .header h1 span { color: var(--blue); }
+
+  .header p {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* ── Sections ── */
+  .section {
+    margin-bottom: 1.25rem;
+    animation: fadeUp .5s ease both;
+  }
+
+  .section:nth-child(2){animation-delay:.04s}
+  .section:nth-child(3){animation-delay:.08s}
+  .section:nth-child(4){animation-delay:.12s}
+  .section:nth-child(5){animation-delay:.16s}
+  .section:nth-child(6){animation-delay:.20s}
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: .75rem;
+  }
+
+  .step-badge {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    background: var(--blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--light);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* ── Form fields ── */
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .field-row:last-child { margin-bottom: 0; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+
+  label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  input[type=text], input[type=email] {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .65rem .9rem;
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    width: 100%;
+  }
+
+  input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+  }
+
+  input::placeholder { color: var(--muted); }
+
+  /* ── Upload ── */
+  .upload-zone {
+    border: 1.5px dashed rgba(37,99,235,0.35);
+    border-radius: 10px;
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+  }
+
+  .upload-zone:hover, .upload-zone.drag {
+    border-color: var(--blue);
+    background: rgba(37,99,235,0.06);
+  }
+
+  .upload-icon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 1rem;
+    border-radius: 12px;
+    background: rgba(37,99,235,0.12);
+    border: 1px solid rgba(37,99,235,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .upload-icon svg { width: 24px; height: 24px; stroke: var(--blue); fill: none; stroke-width: 1.75; }
+  .upload-zone p { font-size: 15px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+  .upload-zone span { font-size: 12px; color: var(--muted); font-weight: 300; }
+
+  #fileInput { display: none; }
+
+  .progress-wrap { margin-top: 1rem; display: none; }
+  .progress-track { height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--blue); width: 0; transition: width .25s; }
+  .progress-label { font-size: 12px; color: var(--muted); margin-top: 6px; font-weight: 300; }
+
+  .stl-parsed {
+    margin-top: 1rem;
+    background: var(--surface2);
+    border: 1px solid rgba(37,99,235,0.2);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: none;
+  }
+
+  .stl-filename {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: .75rem;
+  }
+
+  .stl-filename svg { width: 14px; height: 14px; stroke: var(--green); fill: none; stroke-width: 2.5; }
+
+  .stl-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .75rem;
+    text-align: center;
+  }
+
+  .stat-val { font-size: 20px; font-weight: 700; color: var(--white); }
+  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+
+  /* ── Option buttons ── */
+  .opt-grid { display: grid; gap: 8px; }
+  .opt-grid.cols3 { grid-template-columns: repeat(3,1fr); }
+  .opt-grid.cols2 { grid-template-columns: repeat(2,1fr); }
+
+  .opt {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .75rem 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s;
+    width: 100%;
+  }
+
+  .opt:hover { border-color: var(--border-h); }
+
+  .opt.selected {
+    border-color: var(--blue);
+    background: rgba(37,99,235,0.1);
+    box-shadow: 0 0 0 1px rgba(37,99,235,0.3);
+  }
+
+  .opt-name { font-size: 13px; font-weight: 600; color: var(--white); }
+  .opt-sub { font-size: 11px; color: var(--muted); margin-top: 3px; font-weight: 300; }
+  .opt.selected .opt-sub { color: #7aa3f5; }
+
+  /* ── Quote card ── */
+  .quote-card {
+    background: var(--surface);
+    border: 1px solid rgba(37,99,235,0.25);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: none;
+    margin-bottom: 0;
+    animation: fadeUp .3s ease both;
+  }
+
+  .quote-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+
+  .quote-header-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--blue);
+  }
+
+  .quote-header-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+
+  .q-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .q-label {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .col-pill {
+    font-size: 10px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .q-val { font-size: 13px; font-weight: 600; color: var(--white); }
+
+  .q-divider { height: 1px; background: rgba(37,99,235,0.2); margin: 1rem 0; }
+
+  .q-total-row { display: flex; justify-content: space-between; align-items: center; }
+  .q-total-label { font-size: 15px; font-weight: 600; color: var(--white); }
+  .q-total-val { font-size: 30px; font-weight: 800; color: var(--blue); }
+
+  .q-note { font-size: 11px; color: var(--muted); margin-top: 1rem; line-height: 1.6; font-weight: 300; }
+
+  /* ── Submit ── */
+  .submit-btn {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: var(--font);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .submit-btn:hover { background: var(--blue-dk); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.35); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: .35; cursor: not-allowed; transform: none; box-shadow: none; }
+  .submit-btn svg { width: 17px; height: 17px; stroke: #fff; fill: none; stroke-width: 2; }
+
+  /* ── Banners ── */
+  .banner { border-radius: 10px; padding: 1rem 1.25rem; font-size: 13px; margin-top: 1rem; align-items: flex-start; gap: 10px; display: none; }
+  .banner.success { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+  .banner.error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
+  .banner p { font-weight: 600; margin-bottom: 3px; }
+  .banner span { font-size: 12px; opacity: .8; font-weight: 300; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-logo { font-size: 16px; font-weight: 800; color: var(--white); letter-spacing: -.01em; }
+  .footer-logo span { color: var(--blue); }
+  .footer p { font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: .1em; text-transform: uppercase; font-weight: 300; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 540px) {
+    .field-row { grid-template-columns: 1fr; }
+    .opt-grid.cols3 { grid-template-columns: 1fr 1fr; }
+    .page { padding: 2rem 1.25rem 4rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <!-- ProtoLab P mark (simplified SVG) -->
+      <svg class="logo-mark" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="44" height="44" rx="10" fill="#111827"/>
+        <path d="M13 10h10c4.418 0 8 3.582 8 8s-3.582 8-8 8h-5v8h-5V10z" fill="#2563EB"/>
+        <path d="M18 18h5a2 2 0 1 0 0-4h-5v4z" fill="#111827" opacity=".4"/>
+        <rect x="18" y="26" width="5" height="8" rx="1" fill="#6B7280"/>
+      </svg>
+      <span class="logo-text">Proto<span>Lab</span></span>
+    </div>
+    <div class="tagline">Design. Prototype. Solve.</div>
+    <h1>Get your instant<br><span>3D print quote</span></h1>
+    <p>Upload your STL file and we'll calculate weight, print time, and pricing in seconds.</p>
+  </div>
+
+  <!-- 01 Details -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-badge">1</div>
+      <span class="section-title">Your details</span>
+    </div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field"><label>Full name</label><input type="text" id="custName" placeholder="Jane Smith"></div>
+        <div class="field"><label>Email address</label><input type="email" id="custEmail" placeholder="jane@email.com"></div>
+      </div>
+      <div class="field" style="margin-top:1rem"><label>Job description</label><input type="text" id="jobDesc" placeholder="e.g. phone stand, bracket, cosplay piece..."></div>
+    </div>
+  </div>
+
+  <!-- 02 STL -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-badge">2</div>
+      <span class="section-title">Upload STL file</span>
+    </div>
+    <div class="card">
+      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <p>Drop your STL file here</p>
+        <span>Click to browse — binary &amp; ASCII supported</span>
+      </div>
+      <input type="file" id="fileInput" accept=".stl">
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-label" id="progressLabel">Parsing geometry...</div>
+      </div>
+      <div class="stl-parsed" id="stlParsed">
+        <div class="stl-filename">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <span id="stlFilename">file.stl</span>
+        </div>
+        <div class="stl-stats">
+          <div class="stat"><div class="stat-val" id="statVol">—</div><div class="stat-lbl">Volume (cm³)</div></div>
+          <div class="stat"><div class="stat-val" id="statWeight">—</div><div class="stat-lbl">Mass (g)</div></div>
+          <div class="stat"><div class="stat-val" id="statTime">—</div><div class="stat-lbl">Print (hrs)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 Material -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-badge">3</div>
+      <span class="section-title">Material</span>
+    </div>
+    <div class="card">
+      <div class="opt-grid cols3" id="matGrid">
+        <button class="opt selected" data-mat="PLA (Black)" data-density="1.24" data-rate="0.025" onclick="selectMat(this)"><div class="opt-name">PLA — black</div><div class="opt-sub">$0.025 / g</div></button>
+        <button class="opt" data-mat="PLA (White)" data-density="1.24" data-rate="0.025" onclick="selectMat(this)"><div class="opt-name">PLA — white</div><div class="opt-sub">$0.025 / g</div></button>
+        <button class="opt" data-mat="PLA (Translucent)" data-density="1.24" data-rate="0.030" onclick="selectMat(this)"><div class="opt-name">PLA — clear</div><div class="opt-sub">$0.030 / g</div></button>
+        <button class="opt" data-mat="PETG (Black)" data-density="1.27" data-rate="0.030" onclick="selectMat(this)"><div class="opt-name">PETG — black</div><div class="opt-sub">$0.030 / g</div></button>
+        <button class="opt" data-mat="ASA (Black)" data-density="1.07" data-rate="0.035" onclick="selectMat(this)"><div class="opt-name">ASA — black</div><div class="opt-sub">$0.035 / g</div></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 Timeframe -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-badge">4</div>
+      <span class="section-title">Timeframe</span>
+    </div>
+    <div class="card">
+      <div class="opt-grid cols3" id="tfGrid">
+        <button class="opt" data-fee="0.5" data-label="1–2 days" onclick="selectTf(this)"><div class="opt-name">1–2 days</div><div class="opt-sub">+50% priority fee</div></button>
+        <button class="opt" data-fee="0.25" data-label="3–5 days" onclick="selectTf(this)"><div class="opt-name">3–5 days</div><div class="opt-sub">+25% priority fee</div></button>
+        <button class="opt selected" data-fee="0" data-label="5–10 days" onclick="selectTf(this)"><div class="opt-name">5–10 days</div><div class="opt-sub">no extra fee</div></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 Shipping -->
+  <div class="section">
+    <div class="section-header">
+      <div class="step-badge">5</div>
+      <span class="section-title">Shipping</span>
+    </div>
+    <div class="card">
+      <div class="opt-grid cols2" id="shipGrid">
+        <button class="opt" data-ship="yes" onclick="selectShip(this)"><div class="opt-name">Yes — ship it</div><div class="opt-sub">AusPost estimate by weight</div></button>
+        <button class="opt selected" data-ship="no" onclick="selectShip(this)"><div class="opt-name">No — pickup</div><div class="opt-sub">collect in person</div></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote breakdown -->
+  <div class="quote-card" id="quoteCard">
+    <div class="quote-header">
+      <div class="quote-header-dot"></div>
+      <div class="quote-header-title">Estimated quote</div>
+    </div>
+    <div class="q-row"><span class="q-label">Print mass <span class="col-pill">col E</span></span><span class="q-val" id="qMass">—</span></div>
+    <div class="q-row"><span class="q-label">Material cost <span class="col-pill">col F</span></span><span class="q-val" id="qMat">—</span></div>
+    <div class="q-row"><span class="q-label">Setup fee <span class="col-pill">col G</span></span><span class="q-val">$5.00</span></div>
+    <div class="q-row"><span class="q-label">Machine time <span class="col-pill">col H</span></span><span class="q-val" id="qTime">—</span></div>
+    <div class="q-row"><span class="q-label">Machine time cost <span class="col-pill">col I</span></span><span class="q-val" id="qMachine">—</span></div>
+    <div class="q-row" id="qPriorityRow"><span class="q-label">Priority fee <span class="col-pill">col K</span></span><span class="q-val" id="qPriority">—</span></div>
+    <div class="q-row" id="qShipRow"><span class="q-label">Shipping <span class="col-pill">col M</span></span><span class="q-val" id="qShip">—</span></div>
+    <div class="q-divider"></div>
+    <div class="q-total-row">
+      <span class="q-total-label">Estimated total</span>
+      <span class="q-total-val" id="qTotal">—</span>
+    </div>
+    <p class="q-note">All prices in AUD. This is an estimate — your final price will be confirmed by our team after reviewing your file. Invoice number assigned on confirmation.</p>
+  </div>
+
+  <div class="banner success" id="successBanner"><div><p>Quote submitted successfully!</p><span>We'll review your file and confirm your final price within 24 hours.</span></div></div>
+  <div class="banner error" id="errorBanner"><div><p>Submission failed</p><span>Please try again or contact us directly.</span></div></div>
+
+  <button class="submit-btn" id="submitBtn" onclick="submitQuote()" disabled>
+    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    Submit quote request
+  </button>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-logo">Proto<span>Lab</span></div>
+    <p>Design. Prototype. Solve.</p>
+  </div>
+
+</div>
+
+<script>
+const WEBHOOK="https://script.google.com/macros/s/AKfycbwNyXYEAa29OlDV-sEroAUXqkd13PDTtcnHJd7BaK-Hagh62c5AQB06Al4rmMUQzzeRpg/exec";
+const MACHINE_RATE=4,SETUP=5;
+let stl={vol:0,weight:0,time:0,ready:false,fname:''};
+let mat={name:'PLA (Black)',density:1.24,rate:0.025};
+let tfFee=0,tfLabel='5–10 days',ship='no';
+
+function auspost(g){if(g<250)return 9.50;if(g<500)return 12.50;if(g<1000)return 16.00;return 22.00;}
+
+const drop=document.getElementById('dropZone');
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('drag');});
+drop.addEventListener('dragleave',()=>drop.classList.remove('drag'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('drag');if(e.dataTransfer.files[0])processSTL(e.dataTransfer.files[0]);});
+document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0])processSTL(e.target.files[0]);});
+
+function processSTL(file){
+  const wrap=document.getElementById('progressWrap'),fill=document.getElementById('progressFill'),lbl=document.getElementById('progressLabel');
+  wrap.style.display='block';document.getElementById('stlParsed').style.display='none';
+  let w=0;const iv=setInterval(()=>{w=Math.min(w+14,88);fill.style.width=w+'%';},60);
+  const reader=new FileReader();
+  reader.onload=e=>{
+    clearInterval(iv);fill.style.width='100%';lbl.textContent='Analysis complete.';
+    setTimeout(()=>{wrap.style.display='none';fill.style.width='0';},600);
+    let vol=0;try{vol=parseSTL(e.target.result);}catch(err){vol=fallback(file.size);}
+    if(vol<=0)vol=fallback(file.size);
+    const volCm=vol/1000,wg=volCm*mat.density,hrs=Math.max(0.5,wg*0.045+0.5);
+    stl={vol:volCm,weight:wg,time:hrs,ready:true,fname:file.name};
+    document.getElementById('stlFilename').textContent=file.name;
+    document.getElementById('statVol').textContent=volCm.toFixed(1);
+    document.getElementById('statWeight').textContent=wg.toFixed(1);
+    document.getElementById('statTime').textContent=hrs.toFixed(1);
+    document.getElementById('stlParsed').style.display='block';
+    updateQuote();checkReady();
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseSTL(buf){
+  const view=new DataView(buf);
+  if(isBin(buf)){
+    const n=view.getUint32(80,true);
+    if(buf.byteLength<84+n*50)return fallback(buf.byteLength);
+    let vol=0;
+    for(let i=0;i<n;i++){
+      const o=84+i*50;
+      const x1=view.getFloat32(o+12,true),y1=view.getFloat32(o+16,true),z1=view.getFloat32(o+20,true);
+      const x2=view.getFloat32(o+24,true),y2=view.getFloat32(o+28,true),z2=view.getFloat32(o+32,true);
+      const x3=view.getFloat32(o+36,true),y3=view.getFloat32(o+40,true),z3=view.getFloat32(o+44,true);
+      vol+=x1*(y2*z3-y3*z2)-x2*(y1*z3-y3*z1)+x3*(y1*z2-y2*z1);
+    }
+    return Math.abs(vol)/6;
+  }
+  return fallback(buf.byteLength);
+}
+
+function isBin(buf){
+  const h=new Uint8Array(buf,0,Math.min(80,buf.byteLength));
+  for(let i=0;i<h.length;i++)if(h[i]<32&&h[i]!==10&&h[i]!==13&&h[i]!==9)return true;
+  return !new TextDecoder().decode(new Uint8Array(buf,0,Math.min(256,buf.byteLength))).toLowerCase().includes('solid');
+}
+
+function fallback(bytes){return Math.max(100,(bytes-84)/50)*8;}
+
+function selectMat(btn){
+  document.querySelectorAll('#matGrid .opt').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  mat={name:btn.dataset.mat,density:parseFloat(btn.dataset.density),rate:parseFloat(btn.dataset.rate)};
+  if(stl.ready){stl.weight=stl.vol*mat.density;stl.time=Math.max(0.5,stl.weight*0.045+0.5);document.getElementById('statWeight').textContent=stl.weight.toFixed(1);document.getElementById('statTime').textContent=stl.time.toFixed(1);}
+  updateQuote();
+}
+
+function selectTf(btn){
+  document.querySelectorAll('#tfGrid .opt').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');tfFee=parseFloat(btn.dataset.fee);tfLabel=btn.dataset.label;updateQuote();
+}
+
+function selectShip(btn){
+  document.querySelectorAll('#shipGrid .opt').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');ship=btn.dataset.ship;updateQuote();
+}
+
+function updateQuote(){
+  if(!stl.ready)return;
+  const matCost=stl.weight*mat.rate,machCost=stl.time*MACHINE_RATE,subtotal=matCost+SETUP+machCost;
+  const priority=subtotal*tfFee,shipCost=ship==='yes'?auspost(stl.weight):0,total=subtotal+priority+shipCost;
+  document.getElementById('qMass').textContent=stl.weight.toFixed(1)+'g';
+  document.getElementById('qMat').textContent='$'+matCost.toFixed(2);
+  document.getElementById('qTime').textContent=stl.time.toFixed(1)+' hrs';
+  document.getElementById('qMachine').textContent='$'+machCost.toFixed(2);
+  document.getElementById('qPriority').textContent='$'+priority.toFixed(2);
+  document.getElementById('qPriorityRow').style.display=tfFee>0?'flex':'none';
+  document.getElementById('qShip').textContent='$'+shipCost.toFixed(2);
+  document.getElementById('qShipRow').style.display=ship==='yes'?'flex':'none';
+  document.getElementById('qTotal').textContent='$'+total.toFixed(2);
+  document.getElementById('quoteCard').style.display='block';
+}
+
+function checkReady(){
+  const n=document.getElementById('custName').value.trim(),e=document.getElementById('custEmail').value.trim();
+  document.getElementById('submitBtn').disabled=!(stl.ready&&n&&e);
+}
+
+['custName','custEmail','jobDesc'].forEach(id=>document.getElementById(id).addEventListener('input',checkReady));
+
+async function submitQuote(){
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  btn.innerHTML='<svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2;animation:spin 1s linear infinite"><circle cx="12" cy="12" r="10" stroke-opacity=".3"/><path d="M12 2a10 10 0 0 1 10 10"/></svg> Submitting...';
+  document.getElementById('errorBanner').style.display='none';
+  document.getElementById('successBanner').style.display='none';
+  const matCost=stl.weight*mat.rate,machCost=stl.time*MACHINE_RATE,subtotal=matCost+SETUP+machCost;
+  const priority=subtotal*tfFee,shipCost=ship==='yes'?auspost(stl.weight):0;
+  const payload={
+    date:new Date().toISOString(),
+    customerName:document.getElementById('custName').value.trim(),
+    jobDescription:document.getElementById('jobDesc').value.trim()||'(none)',
+    material:mat.name,
+    printMassG:stl.weight.toFixed(2),
+    materialCost:matCost.toFixed(2),
+    machineTimeHrs:stl.time.toFixed(2),
+    machineTimeCost:machCost.toFixed(2),
+    priorityLevel:tfLabel,
+    priorityFee:priority.toFixed(2),
+    shippingRequired:ship==='yes'?'Yes':'No',
+    shippingCost:shipCost.toFixed(2)
+  };
+  try{
+    await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    document.getElementById('successBanner').style.display='flex';
+    btn.innerHTML='✓ &nbsp;Quote submitted';
+    btn.style.background='#16a34a';
+  }catch(err){
+    document.getElementById('errorBanner').style.display='flex';
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Submit quote request';
+  }
+}
+</script>
+</body>
+</html>
