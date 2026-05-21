@@ -549,13 +549,13 @@
       <div class="quote-header-dot"></div>
       <div class="quote-header-title">Estimated quote</div>
     </div>
-    <div class="q-row"><span class="q-label">Print mass <span class="col-pill">col E</span></span><span class="q-val" id="qMass">—</span></div>
-    <div class="q-row"><span class="q-label">Material cost <span class="col-pill">col F</span></span><span class="q-val" id="qMat">—</span></div>
-    <div class="q-row"><span class="q-label">Setup fee <span class="col-pill">col G</span></span><span class="q-val">$5.00</span></div>
-    <div class="q-row"><span class="q-label">Machine time <span class="col-pill">col H</span></span><span class="q-val" id="qTime">—</span></div>
-    <div class="q-row"><span class="q-label">Machine time cost <span class="col-pill">col I</span></span><span class="q-val" id="qMachine">—</span></div>
-    <div class="q-row" id="qPriorityRow"><span class="q-label">Priority fee <span class="col-pill">col K</span></span><span class="q-val" id="qPriority">—</span></div>
-    <div class="q-row" id="qShipRow"><span class="q-label">Shipping <span class="col-pill">col M</span></span><span class="q-val" id="qShip">—</span></div>
+    <div class="q-row"><span class="q-label">Print mass</span><span class="q-val" id="qMass">—</span></div>
+    <div class="q-row"><span class="q-label">Material cost</span><span class="q-val" id="qMat">—</span></div>
+    <div class="q-row"><span class="q-label">Setup fee</span><span class="q-val">$5.00</span></div>
+    <div class="q-row"><span class="q-label">Machine time</span><span class="q-val" id="qTime">—</span></div>
+    <div class="q-row"><span class="q-label">Machine time cost</span><span class="q-val" id="qMachine">—</span></div>
+    <div class="q-row" id="qPriorityRow"><span class="q-label">Priority fee</span><span class="q-val" id="qPriority">—</span></div>
+    <div class="q-row" id="qShipRow"><span class="q-label">Shipping</span><span class="q-val" id="qShip">—</span></div>
     <div class="q-divider"></div>
     <div class="q-total-row">
       <span class="q-total-label">Estimated total</span>
@@ -707,7 +707,8 @@ async function submitQuote(){
     shippingCost:shipCost.toFixed(2)
   };
   try{
-    await fetch(WEBHOOK,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const url=WEBHOOK+'?data='+encodeURIComponent(JSON.stringify(payload));
+    await fetch(url,{method:'GET',mode:'no-cors'});
     document.getElementById('successBanner').style.display='flex';
     btn.innerHTML='✓ &nbsp;Quote submitted';
     btn.style.background='#16a34a';
